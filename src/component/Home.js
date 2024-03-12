@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import CheckLimit from './CheckLimit';
+//import CheckLimit from './CheckLimit';
 // import JoinQuiz from './JoinQuiz';
-import './Quiz.css';
+//import './Quiz.css';
 
 const Home= () => {
 
@@ -132,4 +132,76 @@ const Home= () => {
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
       };
     
+
+      return (
+        <div className="app">
+          {!quizStarted && (
+            <>
+              {gamePin && <p>Game Pin: {gamePin}</p>}
+              <CheckLimit />
+            </>
+          )}
+          {!quizStarted && (
+            <button onClick={handleStartQuiz}>Start Quiz</button>
+          )}
+          {quizStarted && !showScore ? (
+            <>
+              <div>Time Left: {formatTime(timeLeft)}</div>
+              <div className="question-section">
+                <div className="question-count">
+                  <span>Question {currentQuestionIndex + 1}</span>/{questions.length}
+                </div>
+                <div className="question-text">
+                  {questions.length > 0 && questions[currentQuestionIndex]?.question}
+                </div>
+              </div>
+              <div className="answer-section">
+                {questions.length > 0 && (
+                  <>
+                    {questions[currentQuestionIndex]?.answers && Object.keys(questions[currentQuestionIndex]?.answers).map((key, index) => {
+                      const answer = questions[currentQuestionIndex]?.answers[key];
+                      if (answer !== null) {
+                        return (
+                          <button
+                            key={index}
+                            onClick={() => handleAnswerButtonClick(key, answer)}
+                            className={answer === questions[selectedOption] ? (isAnswerCorrect ? 'correct' : 'incorrect') : ''}
+                            disabled={selectedOption}
+                          >
+                            {answer}
+                          </button>
+                        );
+                      }
+                      return null;
+                    })}
+                  </>
+                )}
+              </div>
+              <div className="next-button">
+                <button onClick={handleNextButtonClick} disabled={!selectedOption}>
+                  Next
+                </button>
+              </div>
+            </>
+          ) : (
+            showScore && (
+              <div className="score-section">
+                You scored {score} out of {questions.length}
+                <button onClick={restartQuiz}>Restart Quiz</button>
+              </div>
+            )
+          )}
+          {/* <JoinQuiz gamePin={gamePin} /> */}
+          {joinedNicknames.length > 0 && (
+            <div>
+              <h3>Joined Names:</h3>
+              <ul>
+                {joinedNicknames.map((user, index) => (
+                  <li key={index}>{user.nickname}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      );
 };
