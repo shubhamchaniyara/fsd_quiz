@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-//import CheckLimit from './CheckLimit';
+import CheckLimit from './CheckLimit';
 // import JoinQuiz from './JoinQuiz';
-//import './Quiz.css';
+import './compo_css/Home.css';
 
 const Home= () => {
 
@@ -205,3 +205,5 @@ const Home= () => {
         </div>
       );
 };
+
+export default Home;
