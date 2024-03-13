@@ -41,7 +41,7 @@ const Home= () => {
           }
         }
         fetchQuestions();
-      }, [isRestart]);
+      }, []);
 
 
       useEffect(() => {
@@ -59,6 +59,7 @@ const Home= () => {
       useEffect(()=>{
         loadusers();
         loadgamepin();
+        sendQuestionsToBackend();
       },[gamePin]);
 
       const loadusers=async () =>{
@@ -66,6 +67,68 @@ const Home= () => {
         const result=await axios.get("http://localhost:8080/QuizPlay");
         setJoinedNickname(result.data);
       };
+
+      const sendQuestionsToBackend = async () => {
+        console.log(questions);
+
+        let Ans=[];
+
+
+        for(let i=0;i<10;i++)
+        {
+          if(questions[i].correct_answers.answer_a_correct === "true")
+          {
+            Ans[i]="answer_a";
+          }
+
+          else if(questions[i].correct_answers.answer_b_correct === "true")
+          {
+            Ans[i]="answer_b";
+
+          }
+
+          else if(questions[i].correct_answers.answer_c_correct === "true")
+          {
+            Ans[i]="answer_c";
+          }
+
+          if(questions[i].correct_answers.answer_d_correct === "true")
+          {
+            Ans[i]="answer_d";
+          }
+
+          else if(questions[i].correct_answers.answer_e_correct === "true")
+          {
+            Ans[i]="answer_e";
+          }
+
+          else if(questions[i].correct_answers.answer_f_correct === "true")
+          {
+            Ans[i]="answer_f";
+          }
+        }
+        const questionsData = [
+        
+          { "question":questions[0].question, "correctAnswer": Ans[0],"option":questions[0].answers},
+          { "question":questions[1].question, "correctAnswer": Ans[1],"option":questions[1].answers},
+          { "question":questions[2].question, "correctAnswer": Ans[2],"option":questions[2].answers},
+          { "question":questions[3].question, "correctAnswer": Ans[3],"option":questions[3].answers},
+          { "question":questions[4].question, "correctAnswer": Ans[4],"option":questions[4].answers},
+          { "question":questions[5].question, "correctAnswer": Ans[5],"option":questions[5].answers},
+          { "question":questions[6].question, "correctAnswer": Ans[6],"option":questions[6].answers},
+          { "question":questions[7].question, "correctAnswer": Ans[7],"option":questions[7].answers},
+          { "question":questions[8].question, "correctAnswer": Ans[8],"option":questions[8].answers},
+          { "question":questions[9].question, "correctAnswer": Ans[9],"option":questions[9].answers},
+
+      ];
+   
+        try {
+            const response = await axios.post('http://localhost:8080/api/questions', questionsData);
+            console.log('Questions saved successfully:', response);
+        } catch (error) {
+            console.error('Error saving questions:', error);
+        }
+    };
 
       const loadgamepin=async () =>{
 

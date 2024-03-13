@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import "./LS.css";
 import {useNavigate} from "react-router-dom";
-import UserService from "../Service/UserService";
+//import UserService from "../Service/UserService";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -21,19 +21,19 @@ const Login = () => {
         }));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        UserService.loginUser(formData)
-            .then((response) => {
-                console.log("Login successful", response.data);
-                localStorage.setItem("token", response.data.token);
-                navigate("/home");
-            })
-            .catch((error) => {
-                console.error("Login failed", error.response);
-                setLoginError("Failed to login. Please check your email and password.");
-            });
-    };
+    // const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     UserService.loginUser(formData)
+    //         .then((response) => {
+    //             console.log("Login successful", response.data);
+    //             localStorage.setItem("token", response.data.token);
+    //             navigate("/home");
+    //         })
+    //         .catch((error) => {
+    //             console.error("Login failed", error.response);
+    //             setLoginError("Failed to login. Please check your email and password.");
+    //         });
+    // };
 
     return (
         <div className="login-page">

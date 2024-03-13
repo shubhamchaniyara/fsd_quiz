@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import "./LS.css";
 import {useNavigate} from "react-router-dom";
-import UserService from "../Service/UserService";
+//import UserService from "../Service/UserService";
 
 const SignUp = () => {
     const navigate = useNavigate();
@@ -75,7 +75,7 @@ const SignUp = () => {
                 alert("Passwords do not match");
                 return;
             }
-            const response = await UserService.saveUser(formData);
+           // const response = await UserService.saveUser(formData);
             console.log("Response data:", response.data);
             const userId = response.data;
             console.log("User ID:", userId);
