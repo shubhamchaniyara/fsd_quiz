@@ -19,7 +19,7 @@ const Home= () => {
     const [joinedNicknames, setJoinedNickname] = useState([]);
 
     useEffect(() => {
-        async function fetchQuestions() {
+        const fetchQuestions= async()=> {
           try {
             const apiKey = 'jJP2xGc8xo9BWxD2DbGdT6kdSkYzMJwmg8g8XcUr';
             const limit = 10;
@@ -36,12 +36,15 @@ const Home= () => {
               }
             });
             setQuestions(response.data);
+            await axios.post("http://localhost:8080/gpin",{
+          "gamepin":gamePin});
+          console.log("r",gamePin);
           } catch (error) {
             console.error('Error fetching data:', error);
           }
         }
         fetchQuestions();
-      }, []);
+      }, [isRestart]);
 
 
       useEffect(() => {
@@ -57,9 +60,7 @@ const Home= () => {
       }, [quizStarted, timeLeft]);
 
       useEffect(()=>{
-        loadusers();
         loadgamepin();
-        sendQuestionsToBackend();
       },[gamePin]);
 
       const loadusers=async () =>{
@@ -69,7 +70,7 @@ const Home= () => {
       };
 
       const sendQuestionsToBackend = async () => {
-        console.log(questions);
+        //console.log(questions);
 
         let Ans=[];
 
@@ -109,25 +110,32 @@ const Home= () => {
         }
         const questionsData = [
         
-          { "question":questions[0].question, "correctAnswer": Ans[0],"option":questions[0].answers},
-          { "question":questions[1].question, "correctAnswer": Ans[1],"option":questions[1].answers},
-          { "question":questions[2].question, "correctAnswer": Ans[2],"option":questions[2].answers},
-          { "question":questions[3].question, "correctAnswer": Ans[3],"option":questions[3].answers},
-          { "question":questions[4].question, "correctAnswer": Ans[4],"option":questions[4].answers},
-          { "question":questions[5].question, "correctAnswer": Ans[5],"option":questions[5].answers},
-          { "question":questions[6].question, "correctAnswer": Ans[6],"option":questions[6].answers},
-          { "question":questions[7].question, "correctAnswer": Ans[7],"option":questions[7].answers},
-          { "question":questions[8].question, "correctAnswer": Ans[8],"option":questions[8].answers},
-          { "question":questions[9].question, "correctAnswer": Ans[9],"option":questions[9].answers},
+          { "question":questions[0].question, "correctAnswer": Ans[0],"option_a":questions[0].answers.answer_a,"option_b":questions[0].answers.answer_b,"option_c":questions[0].answers.answer_c,"option_d":questions[0].answers.answer_d,"option_e":questions[0].answers.answer_e,"option_f":questions[0].answers.answer_f},
+          { "question":questions[1].question, "correctAnswer": Ans[1],"option_a":questions[1].answers.answer_a,"option_b":questions[0].answers.answer_b,"option_c":questions[0].answers.answer_c,"option_d":questions[0].answers.answer_d,"option_e":questions[0].answers.answer_e,"option_f":questions[0].answers.answer_f},
+          { "question":questions[2].question, "correctAnswer": Ans[2],"option_a":questions[2].answers.answer_a,"option_b":questions[0].answers.answer_b,"option_c":questions[0].answers.answer_c,"option_d":questions[0].answers.answer_d,"option_e":questions[0].answers.answer_e,"option_f":questions[0].answers.answer_f},
+          { "question":questions[3].question, "correctAnswer": Ans[3],"option_a":questions[3].answers.answer_a,"option_b":questions[0].answers.answer_b,"option_c":questions[0].answers.answer_c,"option_d":questions[0].answers.answer_d,"option_e":questions[0].answers.answer_e,"option_f":questions[0].answers.answer_f},
+          { "question":questions[4].question, "correctAnswer": Ans[4],"option_a":questions[4].answers.answer_a,"option_b":questions[0].answers.answer_b,"option_c":questions[0].answers.answer_c,"option_d":questions[0].answers.answer_d,"option_e":questions[0].answers.answer_e,"option_f":questions[0].answers.answer_f},
+          { "question":questions[5].question, "correctAnswer": Ans[5],"option_a":questions[5].answers.answer_a,"option_b":questions[0].answers.answer_b,"option_c":questions[0].answers.answer_c,"option_d":questions[0].answers.answer_d,"option_e":questions[0].answers.answer_e,"option_f":questions[0].answers.answer_f},
+          { "question":questions[6].question, "correctAnswer": Ans[6],"option_a":questions[6].answers.answer_a,"option_b":questions[0].answers.answer_b,"option_c":questions[0].answers.answer_c,"option_d":questions[0].answers.answer_d,"option_e":questions[0].answers.answer_e,"option_f":questions[0].answers.answer_f},
+          { "question":questions[7].question, "correctAnswer": Ans[7],"option_a":questions[7].answers.answer_a,"option_b":questions[0].answers.answer_b,"option_c":questions[0].answers.answer_c,"option_d":questions[0].answers.answer_d,"option_e":questions[0].answers.answer_e,"option_f":questions[0].answers.answer_f},
+          { "question":questions[8].question, "correctAnswer": Ans[8],"option_a":questions[8].answers.answer_a,"option_b":questions[0].answers.answer_b,"option_c":questions[0].answers.answer_c,"option_d":questions[0].answers.answer_d,"option_e":questions[0].answers.answer_e,"option_f":questions[0].answers.answer_f},
+          { "question":questions[9].question, "correctAnswer": Ans[9],"option_a":questions[9].answers.answer_a,"option_b":questions[0].answers.answer_b,"option_c":questions[0].answers.answer_c,"option_d":questions[0].answers.answer_d,"option_e":questions[0].answers.answer_e,"option_f":questions[0].answers.answer_f},
 
       ];
-   
+     
+
+      // const response = await axios.post('http://localhost:8080/question',questionsData[6]);
+
+      console.log('Questions saved successfully:', response);
+      for(let j=0;j<10;j++)
+      {
         try {
-            const response = await axios.post('http://localhost:8080/api/questions', questionsData);
-            console.log('Questions saved successfully:', response);
-        } catch (error) {
-            console.error('Error saving questions:', error);
-        }
+          const response = await axios.post('http://localhost:8080/question',questionsData[j]);
+          console.log('Questions saved successfully:', response);
+      } catch (error) {
+          console.error('Error saving questions:', error);
+      }
+      }
     };
 
       const loadgamepin=async () =>{
@@ -146,6 +154,7 @@ const Home= () => {
 
       const handleStartQuiz = () => {
         setQuizStarted(true);
+        sendQuestionsToBackend();
       };
 
       const handleAnswerButtonClick = (selectedOption, answer) => {
@@ -185,6 +194,7 @@ const Home= () => {
         setQuestions([]);
         setisRestart(!isRestart);
         setTimeLeft(120); 
+        sendQuestionsToBackend();
       };
       const handleEndQuiz = () => {
         setShowScore(true);
@@ -228,8 +238,8 @@ const Home= () => {
                           <button
                             key={index}
                             onClick={() => handleAnswerButtonClick(key, answer)}
-                            className={answer === questions[selectedOption] ? (isAnswerCorrect ? 'correct' : 'incorrect') : ''}
-                            disabled={selectedOption}
+                            className={key === answer ?'select':''}
+                            
                           >
                             {answer}
                           </button>

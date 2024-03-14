@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import "./LS.css";
 import {useNavigate} from "react-router-dom";
+import axios from "axios";
 //import UserService from "../Service/UserService";
 
 const SignUp = () => {
@@ -75,13 +76,18 @@ const SignUp = () => {
                 alert("Passwords do not match");
                 return;
             }
-           // const response = await UserService.saveUser(formData);
-            console.log("Response data:", response.data);
-            const userId = response.data;
-            console.log("User ID:", userId);
-
-            localStorage.setItem('userId', userId);
+            console.log(formData);
+            try{
+                const response = await axios.post("http://localhost:8080/signup", formData);
+                console.log("Response data:", response);
+                const userId = response.data;
+                console.log("User ID:", userId);
+                localStorage.setItem('userId', userId);
             navigate('/home');
+            }catch (error) {
+                     console.error('Error saving user details:', error);
+               }
+           
         } catch (error) {
             console.log("Error occurred:", error.toJSON());
             if (error.response) {

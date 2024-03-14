@@ -21,19 +21,19 @@ const Login = () => {
         }));
     };
 
-    // const handleSubmit = (e) => {
-    //     e.preventDefault();
-    //     UserService.loginUser(formData)
-    //         .then((response) => {
-    //             console.log("Login successful", response.data);
-    //             localStorage.setItem("token", response.data.token);
-    //             navigate("/home");
-    //         })
-    //         .catch((error) => {
-    //             console.error("Login failed", error.response);
-    //             setLoginError("Failed to login. Please check your email and password.");
-    //         });
-    // };
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        axios.post("http://localhost:8080/login", formData).loginUser(formData)
+            .then((response) => {
+                console.log("Login successful", response.data);
+                localStorage.setItem("token", response.data.token);
+                navigate("/home");
+            })
+            .catch((error) => {
+                console.error("Login failed", error.response);
+                setLoginError("Failed to login. Please check your email and password.");
+            });
+    };
 
     return (
         <div className="login-page">

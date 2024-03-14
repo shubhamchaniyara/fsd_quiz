@@ -67,6 +67,11 @@
     background-color: #dc3545; 
     color: white;
   }
+
+  button.select {
+    background-color: #b3c041; 
+    color: white;
+  }
   
   .next-button {
     text-align: center;
