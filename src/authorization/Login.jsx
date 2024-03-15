@@ -8,8 +8,8 @@ const Login = () => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
-        email: "",
-        password: "",
+        "emailId": "",
+        "password": ""
     });
 
     const [loginError, setLoginError] = useState("");
@@ -24,7 +24,7 @@ const Login = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.post("http://localhost:8080/login", formData).loginUser(formData)
+        axios.post("http://localhost:8080/login", formData)
             .then((response) => {
                 console.log("Login successful", response.data);
                 localStorage.setItem("token", response.data.token);
@@ -47,10 +47,10 @@ const Login = () => {
                 {loginError && <div className="error-message">{loginError}</div>}
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
-                        <label htmlFor="email">Email</label>
+                        <label htmlFor="emailId">Email</label>
                         <input
                             type="email"
-                            id="email"
+                            id="emailId"
                             required
                             placeholder="Email"
                             value={formData.email}
