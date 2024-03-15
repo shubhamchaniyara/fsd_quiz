@@ -30,9 +30,12 @@ function JoinQuiz() {
   const fetchpin =async () =>{
 
     const result=await axios.get("http://localhost:8080/getpin");
-    let gamepin=result.data[0].gamepin;
+    console.log(result);
+    const arraySize = result.data.length;
+    let gamepin=result.data[arraySize-1].gamepin;
+    //console.log(gamepin);
     setGamePin(gamepin);
-    console.log("fetch",gamePin);
+    console.log("fetch",gamepin);
    
   };
 
@@ -52,7 +55,7 @@ function JoinQuiz() {
       });
  
     //window.open("/home")
-    navigate("/home");
+    navigate("/QuizPlay");
     
     } else {
       console.log("enter",enteredGamePin);
