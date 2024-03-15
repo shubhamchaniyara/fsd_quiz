@@ -61,7 +61,13 @@ const Home= () => {
 
       useEffect(()=>{
         loadgamepin();
+        loadusers();
       },[gamePin]);
+
+      useEffect(()=>{
+
+        loadusers();
+      },[]);
 
       const loadusers=async () =>{
 
@@ -126,7 +132,6 @@ const Home= () => {
 
       // const response = await axios.post('http://localhost:8080/question',questionsData[6]);
 
-      console.log('Questions saved successfully:', response);
       for(let j=0;j<10;j++)
       {
         try {
@@ -211,7 +216,7 @@ const Home= () => {
           {!quizStarted && (
             <>
               {gamePin && <p>Game Pin: {gamePin}</p>}
-              <CheckLimit />
+              {/* <CheckLimit /> */}
             </>
           )}
           {!quizStarted && (

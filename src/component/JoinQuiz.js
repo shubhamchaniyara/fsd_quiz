@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
 import './compo_css/JoinQuiz.css';
-//import {Link, useNavigate} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 
 function JoinQuiz() {
@@ -8,7 +8,7 @@ function JoinQuiz() {
   const [enteredGamePin, setEnteredGamePin] = useState('');
   const [joinedNicknames, setJoinedNickname] = useState([]);
   const [gamePin, setGamePin] = useState(null);
-  //let navigate=useNavigate();
+  const navigate = useNavigate();
 
 
   // const gamePin = localStorage.getItem('gamePin')
@@ -30,10 +30,10 @@ function JoinQuiz() {
   const fetchpin =async () =>{
 
     const result=await axios.get("http://localhost:8080/getpin");
-    let gamepin=result.data[5].gamepin;
+    let gamepin=result.data[0].gamepin;
     setGamePin(gamepin);
-    console.log(gamePin);
-    console.log(gamepin);
+    console.log("fetch",gamePin);
+   
   };
 
 
@@ -46,12 +46,14 @@ function JoinQuiz() {
         setEnteredGamePin('');
         console.log('valid game pin');
     
-        await axios.post("http://localhost:8080/tquiz",{
+        await axios.post("http://localhost:8080/tquiz",{  
           "gamepin":gamePin,
           "nickname":nickname
       });
  
-    window.open("/home")
+    //window.open("/home")
+    navigate("/home");
+    
     } else {
       console.log("enter",enteredGamePin);
       console.log("gam",gamePin);
