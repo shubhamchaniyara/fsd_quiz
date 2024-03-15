@@ -55,13 +55,12 @@ function JoinQuiz() {
       });
  
     //window.open("/home")
-    navigate("/QuizPlay");
+    navigate("/Quizstart");
     
     } else {
       console.log("enter",enteredGamePin);
       console.log("gam",gamePin);
       console.log('Invalid game pin');
-      setNickname('');
       setEnteredGamePin('');
     }
   };
@@ -90,15 +89,15 @@ function JoinQuiz() {
         <button type="submit">Join</button>
       </form>
       {joinedNicknames.length > 0 && (
-        <div>
-          <h3>Joined Names:</h3>
-          <ul>
-            {joinedNicknames.map((name, index) => (
-              <li key={index}>{name}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+    <div className="joined-names">
+      <h3>Joined Names:</h3>
+      <ul>
+        {joinedNicknames.map((user, index) => (
+          <li key={index}>{user}</li>
+        ))}
+      </ul>
+    </div>
+  )}
     </div>
   );
 };

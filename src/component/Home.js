@@ -47,7 +47,7 @@ const Home= () => {
 
       return (
         <div className="app">
-              {gamePin && <p>Game Pin: {gamePin}</p>}
+              {gamePin && <h1 className='gamepin'>Game Pin: {gamePin}</h1>}
               <CheckLimit />
         </div>
       );

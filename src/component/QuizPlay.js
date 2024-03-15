@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CheckLimit from './CheckLimit';
 // import JoinQuiz from './JoinQuiz';
-import './compo_css/Home.css';
+import './compo_css/QuizPlay.css';
 
 const QuizPlay= () => {
 
