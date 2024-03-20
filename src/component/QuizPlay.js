@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import CheckLimit from './CheckLimit';
 // import JoinQuiz from './JoinQuiz';
 import './compo_css/QuizPlay.css';
 
@@ -60,10 +59,10 @@ const QuizPlay = () => {
     return () => clearTimeout(timer);
   }, [quizStarted, timeLeft]);
 
-  useEffect(() => {
-    //loadgamepin();
-    loadusers();
-  }, []);
+  // useEffect(() => {
+  //   //loadgamepin();
+  //   loadusers();
+  // }, []);
 
   useEffect(() => {
 
@@ -86,7 +85,7 @@ const QuizPlay = () => {
       setScores(scoreData);
     };
 
-    fetchScoreData();
+    //fetchScoreData();
   }, [showScore]);
 
   const loadusers = async () => {
@@ -293,7 +292,7 @@ const QuizPlay = () => {
                       <button
                         key={index}
                         onClick={() => handleAnswerButtonClick(key, answer)}
-                        className={key == answer ? 'select' : ''}
+                        className={key === selectedOption ? "select" : ''}
 
                       >
                         {answer}
@@ -316,14 +315,14 @@ const QuizPlay = () => {
           <div className="score-section">
             You scored {score} out of {questions.length}
             <button onClick={restartQuiz}>Restart Quiz</button>
-            <h3>Joined Names:</h3>
+            {/* <h3>Joined Names:</h3> */}
           
             <ul>
-            {joinedNicknames.map((nickname, index) => (
+            {/* {joinedNicknames.map((nickname, index) => (
               <li key={index}>
                 {nickname} - Score: {scores[joinID[index]] !== undefined ? scores[joinID[index]] : 'Loading...'}
               </li>
-            ))}
+            ))} */}
           </ul>
           </div>
         )
