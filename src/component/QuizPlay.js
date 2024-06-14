@@ -75,7 +75,7 @@ const QuizPlay = () => {
       const scoreData = {};
       for (const userid of joinID) {
         try {
-          const response = await axios.get(`http://localhost:8080/getScore/${userid}`);
+          const response = await axios.get(`https://railway-dev-production-d537.up.railway.app/quiz/getScore/${userid}`);
           scoreData[userid] = response.data.score;
         } catch (error) {
           console.error('Error fetching score for userid:', userid, error);
@@ -94,7 +94,7 @@ const QuizPlay = () => {
     // setJoinedNickname(result.data);
 
     try {
-      const result = await axios.get("http://localhost:8080/QuizPlay");
+      const result = await axios.get("https://railway-dev-production-d537.up.railway.app/quiz/QuizPlay");
       console.log(result);
       const arraySize = result.data.length;
       let targetGamepin = result.data[arraySize - 1].gamepin;
@@ -162,7 +162,7 @@ const QuizPlay = () => {
 
     for (let j = 0; j < 10; j++) {
       try {
-        const response = await axios.post('http://localhost:8080/question', questionsData[j]);
+        const response = await axios.post('https://railway-dev-production-d537.up.railway.app/question/question', questionsData[j]);
         //console.log('Questions saved successfully:', response);
       } catch (error) {
         console.error('Error saving questions:', error);
@@ -217,7 +217,7 @@ const QuizPlay = () => {
           // const updatedScore = currentScore + 1;
 
 
-          await axios.post(`http://localhost:8080/updateScore/${userid}`);
+          await axios.post(`https://railway-dev-production-d537.up.railway.app/quiz/updateScore/${userid}`);
 
           console.log('Score updated successfully for userid:', userid);
         } catch (error) {

@@ -34,7 +34,7 @@ const Home= () => {
 
         if(gamePin!=null)
         {
-          await axios.post("http://localhost:8080/gpin",{
+          await axios.post("https://railway-dev-production-d537.up.railway.app/game/gpin",{
           "gamepin":gamePin});
           console.log("r",gamePin);
         }
