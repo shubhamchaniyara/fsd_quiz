@@ -2,50 +2,27 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 // import JoinQuiz from './JoinQuiz';
 import './compo_css/QuizPlay.css';
+import {useNavigate} from 'react-router-dom';
+
+
+
 
 const QuizPlay = () => {
 
   const [questions, setQuestions] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [score, setScore] = useState(0);
+  const [quizend, setquizend] = useState(false);
   const [showScore, setShowScore] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [isRestart, setisRestart] = useState(false);
   const [quizStarted, setQuizStarted] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(120);
+  const [timeLeft, setTimeLeft] = useState(90);
   const [joinedNicknames, setJoinedNickname] = useState([]);
   const [joinID, setjoinID] = useState([]);
-  const [Ans, setAns] = useState([]);
+  const [targetGamepin, settargetGamepin] = useState(null);
   const [scores, setScores] = useState({});
 
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const apiKey = 'jJP2xGc8xo9BWxD2DbGdT6kdSkYzMJwmg8g8XcUr';
-        const limit = 10;
-        // const pin = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
-        // setGamePin(pin);
-        // document.cookie = `gamePin=${pin}; expires=Thu, 18 Dec 2025 12:00:00 UTC`;
-        // console.log(pin);
-        // document.cookie = `gamePin=${pin}; expires=Thu, 18 Dec 2025 12:00:00 UTC`;
-        //console.log(pin);
-        const response = await axios.get('https://quizapi.io/api/v1/questions', {
-          params: {
-            apiKey: apiKey,
-            limit: limit
-          }
-        });
-        setQuestions(response.data);
-        //     await axios.post("http://localhost:8080/gpin",{
-        //   "gamepin":gamePin});
-        //   console.log("r",gamePin);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    }
-    fetchQuestions();
-  }, [isRestart]);
-
+  
 
   useEffect(() => {
     let timer;
@@ -59,15 +36,47 @@ const QuizPlay = () => {
     return () => clearTimeout(timer);
   }, [quizStarted, timeLeft]);
 
-  // useEffect(() => {
-  //   //loadgamepin();
-  //   loadusers();
-  // }, []);
+  
 
   useEffect(() => {
+    const loadUsers = async () => {
+      if (!quizStarted) {
+        loadusers();
+      }
+    };
+    const interval = setInterval(loadUsers, 1000); 
+    return () => clearInterval(interval); 
+  }, [quizStarted]); 
+  
 
-    loadusers();
-  }, []);
+  useEffect(()=>{
+    fetchquestion();
+  },[])
+
+  useEffect(() => {
+    const start = async () => {
+      try {
+        const result = await axios.get("http://localhost:8080/getstart");
+        const arraySize = result.data.length;
+        let check = result.data[arraySize - 1].checkstatus;
+        if (check === 'yes') {
+          setQuizStarted(true);
+          
+        } else {
+          console.log("false");
+        }
+      } catch (error) {
+        console.error("Error fetching data: ", error);
+      }
+    };
+
+    const intervalId = setInterval(() => {
+      start();
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []); 
+
 
 
   useEffect(() => {
@@ -75,32 +84,30 @@ const QuizPlay = () => {
       const scoreData = {};
       for (const userid of joinID) {
         try {
-          const response = await axios.get(`https://railway-dev-production-d537.up.railway.app/quiz/getScore/${userid}`);
-          scoreData[userid] = response.data.score;
+          const response = await axios.get(`http://localhost:8080/getScore/${userid}`);
+          scoreData[userid] = response.data;
         } catch (error) {
           console.error('Error fetching score for userid:', userid, error);
           scoreData[userid] = null;
         }
       }
       setScores(scoreData);
+      console.log(scoreData);
     };
 
-    //fetchScoreData();
+   fetchScoreData();
   }, [showScore]);
 
+
   const loadusers = async () => {
-
-    // const result=await axios.get("http://localhost:8080/QuizPlay");
-    // setJoinedNickname(result.data);
-
+   
     try {
-      const result = await axios.get("https://railway-dev-production-d537.up.railway.app/quiz/QuizPlay");
+      const result = await axios.get("http://localhost:8080/QuizPlay");
       console.log(result);
       const arraySize = result.data.length;
-      let targetGamepin = result.data[arraySize - 1].gamepin;
-      // Filter data where gamepin matches the targetGamepin
-      const filteredData = result.data.filter(item => item.gamepin == targetGamepin);
-      // Extract nicknames from filtered data
+      let t = result.data[arraySize - 1].gamepin;
+      settargetGamepin(t);
+      const filteredData = result.data.filter(item => item.gamepin == t);
       const nicknames = filteredData.map(item => item.nickname);
       const joinid = filteredData.map(item => item.id);
       setJoinedNickname(nicknames);
@@ -110,154 +117,102 @@ const QuizPlay = () => {
     }
   };
 
-  const sendQuestionsToBackend = async () => {
-    //console.log(questions);
-
-    const updatedAns = [];
-    for (let i = 0; i < 10; i++) {
-
-      if (questions[i].correct_answers.answer_a_correct === "true") {
-        updatedAns[i] = "answer_a";
+  const fetchquestion = async() =>{
+    const result = await axios.get("http://localhost:8080/getquestion");
+      console.log(result);
+      const Size = result.data.length;
+      
+      for(let i=0;i<10;i++)
+      {
+        if(Size>10)
+        {
+          questions[i] = 
+          {
+            question: result.data[Size-10+i].question,
+            answers: {
+              answer_a: result.data[Size-10+i].option_a,
+              answer_b: result.data[Size-10+i].option_b,
+              answer_c: result.data[Size-10+i].option_c,
+              answer_d:result.data[Size-10+i].option_d,
+              answer_e: result.data[Size-10+i].option_e,
+              answer_f: result.data[Size-10+i].option_f
+            },
+            correctAnswer: result.data[Size-10+i].correctAnswer
+          }
+        }
+        else{
+          questions[i] = 
+          {
+            question: result.data[i].question,
+            answers: {
+              answer_a: result.data[i].option_a,
+              answer_b: result.data[i].option_b,
+              answer_c: result.data[i].option_c,
+              answer_d:result.data[i].option_d,
+              answer_e: result.data[i].option_e,
+              answer_f: result.data[i].option_f
+            },
+            correctAnswer: result.data[i].correctAnswer
+          }
+        }
+        
       }
+  }
 
-      else if (questions[i].correct_answers.answer_b_correct === "true") {
-        updatedAns[i] = "answer_b";
+  
 
-      }
-
-      else if (questions[i].correct_answers.answer_c_correct === "true") {
-        updatedAns[i] = "answer_c";
-      }
-
-      if (questions[i].correct_answers.answer_d_correct === "true") {
-        updatedAns[i] = "answer_d";
-      }
-
-      else if (questions[i].correct_answers.answer_e_correct === "true") {
-        updatedAns[i] = "answer_e";
-      }
-
-      else if (questions[i].correct_answers.answer_f_correct === "true") {
-        updatedAns[i] = "answer_f";
-      }
-    }
-    setAns(updatedAns);
-    const questionsData = [
-
-      { "question": questions[0].question, "correctAnswer": Ans[0], "option_a": questions[0].answers.answer_a, "option_b": questions[0].answers.answer_b, "option_c": questions[0].answers.answer_c, "option_d": questions[0].answers.answer_d, "option_e": questions[0].answers.answer_e, "option_f": questions[0].answers.answer_f },
-      { "question": questions[1].question, "correctAnswer": Ans[1], "option_a": questions[1].answers.answer_a, "option_b": questions[0].answers.answer_b, "option_c": questions[0].answers.answer_c, "option_d": questions[0].answers.answer_d, "option_e": questions[0].answers.answer_e, "option_f": questions[0].answers.answer_f },
-      { "question": questions[2].question, "correctAnswer": Ans[2], "option_a": questions[2].answers.answer_a, "option_b": questions[0].answers.answer_b, "option_c": questions[0].answers.answer_c, "option_d": questions[0].answers.answer_d, "option_e": questions[0].answers.answer_e, "option_f": questions[0].answers.answer_f },
-      { "question": questions[3].question, "correctAnswer": Ans[3], "option_a": questions[3].answers.answer_a, "option_b": questions[0].answers.answer_b, "option_c": questions[0].answers.answer_c, "option_d": questions[0].answers.answer_d, "option_e": questions[0].answers.answer_e, "option_f": questions[0].answers.answer_f },
-      { "question": questions[4].question, "correctAnswer": Ans[4], "option_a": questions[4].answers.answer_a, "option_b": questions[0].answers.answer_b, "option_c": questions[0].answers.answer_c, "option_d": questions[0].answers.answer_d, "option_e": questions[0].answers.answer_e, "option_f": questions[0].answers.answer_f },
-      { "question": questions[5].question, "correctAnswer": Ans[5], "option_a": questions[5].answers.answer_a, "option_b": questions[0].answers.answer_b, "option_c": questions[0].answers.answer_c, "option_d": questions[0].answers.answer_d, "option_e": questions[0].answers.answer_e, "option_f": questions[0].answers.answer_f },
-      { "question": questions[6].question, "correctAnswer": Ans[6], "option_a": questions[6].answers.answer_a, "option_b": questions[0].answers.answer_b, "option_c": questions[0].answers.answer_c, "option_d": questions[0].answers.answer_d, "option_e": questions[0].answers.answer_e, "option_f": questions[0].answers.answer_f },
-      { "question": questions[7].question, "correctAnswer": Ans[7], "option_a": questions[7].answers.answer_a, "option_b": questions[0].answers.answer_b, "option_c": questions[0].answers.answer_c, "option_d": questions[0].answers.answer_d, "option_e": questions[0].answers.answer_e, "option_f": questions[0].answers.answer_f },
-      { "question": questions[8].question, "correctAnswer": Ans[8], "option_a": questions[8].answers.answer_a, "option_b": questions[0].answers.answer_b, "option_c": questions[0].answers.answer_c, "option_d": questions[0].answers.answer_d, "option_e": questions[0].answers.answer_e, "option_f": questions[0].answers.answer_f },
-      { "question": questions[9].question, "correctAnswer": Ans[9], "option_a": questions[9].answers.answer_a, "option_b": questions[0].answers.answer_b, "option_c": questions[0].answers.answer_c, "option_d": questions[0].answers.answer_d, "option_e": questions[0].answers.answer_e, "option_f": questions[0].answers.answer_f },
-
-    ];
-
-
-    // const response = await axios.post('http://localhost:8080/question',questionsData[6]);
-
-    for (let j = 0; j < 10; j++) {
-      try {
-        const response = await axios.post('https://railway-dev-production-d537.up.railway.app/question/question', questionsData[j]);
-        //console.log('Questions saved successfully:', response);
-      } catch (error) {
-        console.error('Error saving questions:', error);
-      }
-    }
-  };
-
-  const handleStartQuiz = () => {
-    setQuizStarted(true);
-    sendQuestionsToBackend();
-  };
-
-  const handleAnswerButtonClick = (selectedOption, answer) => {
+  const handleAnswerButtonClick = async (selectedOption) => {
     const currentQuestion = questions[currentQuestionIndex];
     if (!currentQuestion) {
       return;
     }
-    const correctAnswersMap = {
-      "answer_a": currentQuestion.correct_answers.answer_a_correct === "true" ? currentQuestion.answers.answer_a : null,
-      "answer_b": currentQuestion.correct_answers.answer_b_correct === "true" ? currentQuestion.answers.answer_b : null,
-      "answer_c": currentQuestion.correct_answers.answer_c_correct === "true" ? currentQuestion.answers.answer_c : null,
-      "answer_d": currentQuestion.correct_answers.answer_d_correct === "true" ? currentQuestion.answers.answer_d : null,
-      "answer_e": currentQuestion.correct_answers.answer_e_correct === "true" ? currentQuestion.answers.answer_e : null,
-      "answer_f": currentQuestion.correct_answers.answer_f_correct === "true" ? currentQuestion.answers.answer_f : null,
-    };
-    const correctAnswer = correctAnswersMap[selectedOption];
 
-    console.log("selectedOption", selectedOption);
-
-    //console.log("Ans[]",Ans[0]);
-
-    if (selectedOption == Ans[currentQuestionIndex]) {
-      // console.log("yes");
-      // {joinID.map((userid, index) => (
-
-      //   console.log(userid)
-      // ))}
-
-      joinID.forEach(async (userid) => {
-        console.log(userid);
-        try {
-
-          // const response = await axios.get(`http://localhost:8080/getScore/${userid}`);
-          // let currentScore = response.data;
-
-
-          // if (currentScore === null) {
-          //     currentScore = 0;
-          // }
-
-
-          // const updatedScore = currentScore + 1;
-
-
-          await axios.post(`https://railway-dev-production-d537.up.railway.app/quiz/updateScore/${userid}`);
-
-          console.log('Score updated successfully for userid:', userid);
-        } catch (error) {
-          console.error('Error updating score for userid:', userid, error);
-        }
-      });
-    }
-    else {
-      console.log("no");
-    }
-
-
-
-    console.log("answer", answer);
-    const isCorrect = answer === correctAnswer;
-    if (isCorrect) {
-      setScore(score + 1);
-    }
     setSelectedOption(selectedOption);
+    const name=localStorage.getItem('name');
+    console.log(name);
+    console.log(joinedNicknames);
+    
+
+    if (selectedOption === currentQuestion.correctAnswer) {
+      console.log("Correct!");
+      const isNameJoined = joinedNicknames.some(nickname => 
+        nickname.trim().toLowerCase() === name
+      );
+      console.log(targetGamepin);
+      console.log(joinID);
+
+
+      if (isNameJoined) {
+        try {
+          const userResponse = await axios.get(`http://localhost:8080/getUserIdByNickname/${targetGamepin}/${name}`);
+          const userId = userResponse.data;
+
+          await axios.post(`http://localhost:8080/updateScore/${userId}`);
+          console.log('Score updated successfully for user ID:', userId);
+        } catch (error) {
+          console.error('Error updating score for user ID:', error);
+        }
+      } else {
+        console.log('Name not found in joined nicknames.');
+      }
+    } else {
+      console.log("Incorrect!");
+    }
   };
+
+
   const handleNextButtonClick = () => {
     if (currentQuestionIndex + 1 < questions.length) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
       setSelectedOption(null);
-    } else {
-      setShowScore(true);
+    }else{
+      setquizend(true);
     }
-  };
-  const restartQuiz = () => {
-    setScore(0);
-    setCurrentQuestionIndex(0);
-    setShowScore(false);
-    setQuestions([]);
-    setisRestart(!isRestart);
-    setTimeLeft(120);
-    sendQuestionsToBackend();
-    console.log(scores);
   };
   const handleEndQuiz = () => {
     setShowScore(true);
+    setquizend(true);
+    
   };
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
@@ -265,15 +220,14 @@ const QuizPlay = () => {
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
+  
+
 
   return (
     <div className="app">
-      {!quizStarted && (
-        <button onClick={handleStartQuiz}>Start Quiz</button>
-      )}
-      {quizStarted && !showScore ? (
+      {quizStarted ? (!quizend ? (
         <>
-          <div>Time Left: {formatTime(timeLeft)}</div>
+          <div className="time-left">Time Left: {formatTime(timeLeft)}</div>
           <div className="question-section">
             <div className="question-count">
               <span>Question {currentQuestionIndex + 1}</span>/{questions.length}
@@ -285,15 +239,14 @@ const QuizPlay = () => {
           <div className="answer-section">
             {questions.length > 0 && (
               <>
-                {questions[currentQuestionIndex]?.answers && Object.keys(questions[currentQuestionIndex]?.answers).map((key, index) => {
+                {Object.keys(questions[currentQuestionIndex]?.answers).map((key, index) => {
                   const answer = questions[currentQuestionIndex]?.answers[key];
                   if (answer !== null) {
                     return (
                       <button
                         key={index}
-                        onClick={() => handleAnswerButtonClick(key, answer)}
-                        className={key === selectedOption ? "select" : ''}
-
+                        onClick={() => handleAnswerButtonClick(key)}
+                        className={selectedOption === key ? 'selected' : ''}
                       >
                         {answer}
                       </button>
@@ -311,35 +264,38 @@ const QuizPlay = () => {
           </div>
         </>
       ) : (
-        showScore && (
+        timeLeft !== 0 ? (
+          <div className="waiting-section">
+            Waiting for the {timeLeft} seconds to end quiz...
+          </div>
+        ) : (
           <div className="score-section">
-            You scored {score} out of {questions.length}
-            <button onClick={restartQuiz}>Restart Quiz</button>
-            {/* <h3>Joined Names:</h3> */}
-          
+             scored out of {questions.length}
             <ul>
-            {/* {joinedNicknames.map((nickname, index) => (
-              <li key={index}>
-                {nickname} - Score: {scores[joinID[index]] !== undefined ? scores[joinID[index]] : 'Loading...'}
-              </li>
-            ))} */}
-          </ul>
+              {joinedNicknames.map((nickname, index) => (
+                <li key={index}>
+                  {nickname} - Score: {scores[joinID[index]] !== undefined ? scores[joinID[index]] : 'Loading...'}
+                </li>
+              ))}
+            </ul>
           </div>
         )
-      )}
-      {/* <JoinQuiz gamePin={gamePin} /> */}
-      {joinedNicknames.length > 0 && (
-        <div>
-          <h3>Joined Names:</h3>
-          <ul>
-            {joinedNicknames.map((user, index) => (
-              <li key={index}>{user}</li>
-            ))}
-          </ul>
-        </div>
+      )) : (
+        joinedNicknames.length > 0 && (
+          <div className="joined-names-section">
+            <h1>Please wait for the quiz to start...</h1>
+            <h3>Joined Names:</h3>
+            <ul>
+              {joinedNicknames.map((user, index) => (
+                <li key={index}>{user}</li>
+              ))}
+            </ul>
+          </div>
+        )
       )}
     </div>
   );
 };
 
 export default QuizPlay;
+

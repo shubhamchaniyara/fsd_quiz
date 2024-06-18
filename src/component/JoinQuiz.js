@@ -3,6 +3,7 @@ import './compo_css/JoinQuiz.css';
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 
+
 function JoinQuiz() {
   const [nickname, setNickname] = useState('');
   const [enteredGamePin, setEnteredGamePin] = useState('');
@@ -11,15 +12,6 @@ function JoinQuiz() {
   const navigate = useNavigate();
 
 
-  // const gamePin = localStorage.getItem('gamePin')
-  // const getCookie = (name) => {
-  //   const value = `; ${document.cookie}`;
-  //   const parts = value.split(`; ${name}=`);
-  //   if (parts.length === 3) return parts.pop().split(';').shift();
-  // };
-
-  // const gamePin = getCookie('gamePin');
-  // console.log("gamePin value in JoinQiz",gamePin);
 
   useEffect(()=>{
     fetchpin();
@@ -29,7 +21,7 @@ function JoinQuiz() {
 //   console.log("gamePin value in JoinQiz",gamePin);
   const fetchpin =async () =>{
 
-    const result=await axios.get("https://railway-dev-production-d537.up.railway.app/game/getpin");
+    const result=await axios.get("http://localhost:8080/getpin");
     console.log(result);
     const arraySize = result.data.length;
     let gamepin=result.data[arraySize-1].gamepin;
@@ -49,12 +41,12 @@ function JoinQuiz() {
         setEnteredGamePin('');
         console.log('valid game pin');
     
-        await axios.post("https://railway-dev-production-d537.up.railway.app/quiz/tquiz",{  
+        await axios.post("http://localhost:8080/tquiz",{  
           "gamepin":gamePin,
           "nickname":nickname
       });
  
-    //window.open("/home")
+    localStorage.setItem("name",nickname);
     navigate("/Quizstart");
     
     } else {

@@ -4,7 +4,7 @@ function CheckLimit() {
   return (
     <div>
       <h3>Scan QR Code</h3>
-      <QRCodeCanvas value="https://fsd-project-green.vercel.app/joinQuiz" size={250}/>,  {}
+      <QRCodeCanvas value="https://quizplay.vercel.app/joinquiz" size={250}/>,  {}
   </div>
     );
 }
